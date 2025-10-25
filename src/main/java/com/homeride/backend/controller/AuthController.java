@@ -32,7 +32,7 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<?> registerEmployee(@RequestBody RegisterRequestDTO registerRequest) {
         try {
-            Employee registeredEmployee = employeeService.registerEmployee(registerRequest);
+            Employee registeredEmployee = employeeService.register(registerRequest);
             return ResponseEntity.ok("Employee registered successfully");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error: Email is already in use!");
