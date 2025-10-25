@@ -43,15 +43,33 @@ public class EmployeeService implements UserDetailsService {
         return employeeRepository.findAll();
     }
 
-    public Employee registerEmployee(RegisterRequestDTO registerRequest) {
-        Employee newEmployee = new Employee();
-        newEmployee.setName(registerRequest.getName());
-        newEmployee.setEmail(registerRequest.getEmail());
-        newEmployee.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
-        newEmployee.setGender(registerRequest.getGender());
-        newEmployee.setRole("EMPLOYEE");
-        newEmployee.setTravelCredit(1000.0);
-        return employeeRepository.save(newEmployee);
+    public Employee register(RegisterRequestDTO request) {
+        // --- 1. Convert email to lowercase ---
+        String lowercaseEmail = request.getEmail().toLowerCase();
+
+        // --- 2. Check if the lowercase email already exists ---
+        if (employeeRepository.existsByEmail(lowercaseEmail)) {
+            throw new IllegalArgumentException("Email address is already registered.");
+        }
+
+        // --- 3. Validate password complexity (Example - adapt as needed) ---
+        if (request.getPassword() == null || request.getPassword().length() < 8) {
+            throw new IllegalArgumentException("Password must be at least 8 characters long.");
+        }
+        // Add more password rules if desired (e.g., regex for uppercase, numbers, symbols)
+
+        // --- 4. Proceed with creating the new Employee ---
+        Employee employee = new Employee();
+        employee.setName(request.getName());
+        employee.setEmail(lowercaseEmail); // <-- Use the lowercase email
+        employee.setPassword(passwordEncoder.encode(request.getPassword()));
+        employee.setGender(request.getGender());
+        employee.setRole("EMPLOYEE"); // Set your default role
+
+        // Initialize other fields if necessary (e.g., travelCredit)
+        employee.setTravelCredit(0.0); // Example initialization
+
+        return employeeRepository.save(employee);
     }
 
     // NEW: Method to update user's own profile (name and phone)
