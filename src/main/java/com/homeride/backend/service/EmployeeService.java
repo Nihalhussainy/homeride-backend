@@ -69,12 +69,9 @@ public class EmployeeService implements UserDetailsService {
 
     public Employee updateProfilePicture(String email, MultipartFile file) {
         Employee employee = findEmployeeByEmail(email);
-        String filename = fileStorageService.store(file);
-        String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path("/uploads/")
-                .path(filename)
-                .toUriString();
-        employee.setProfilePictureUrl(fileDownloadUri);
+        // FileStorageService already returns the complete Cloudinary URL
+        String profilePictureUrl = fileStorageService.store(file);
+        employee.setProfilePictureUrl(profilePictureUrl);
         return employeeRepository.save(employee);
     }
 
