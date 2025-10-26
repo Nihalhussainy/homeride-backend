@@ -6,9 +6,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 public class EmailService {
+
+    private static final Logger logger = LoggerFactory.getLogger(EmailService.class);
 
     @Autowired
     private JavaMailSender mailSender;
@@ -16,37 +20,50 @@ public class EmailService {
     @Value("${contact.email.recipient}")
     private String recipientEmail;
 
+    @Value("${spring.mail.username}")
+    private String senderEmail;
+
     public void sendContactEmail(ContactRequest contactRequest) {
-        SimpleMailMessage message = new SimpleMailMessage();
+        try {
+            logger.info("Preparing to send contact email from: {} to: {}", contactRequest.getEmail(), recipientEmail);
 
-        // Set recipient (your business email)
-        message.setTo(recipientEmail);
+            SimpleMailMessage message = new SimpleMailMessage();
 
-        // Set from (the user's email)
-        message.setFrom(contactRequest.getEmail());
+            // Set recipient (your business email)
+            message.setTo(recipientEmail);
 
-        // Set reply-to (so you can reply directly to the user)
-        message.setReplyTo(contactRequest.getEmail());
+            // CRITICAL: Use the authenticated Gmail address as the sender
+            // Gmail SMTP requires this to match the authenticated account
+            message.setFrom(senderEmail);
 
-        // Set subject
-        message.setSubject("New Contact Form Submission from " + contactRequest.getName());
+            // Set reply-to (so you can reply directly to the user)
+            message.setReplyTo(contactRequest.getEmail());
 
-        // Set body
-        String emailBody = String.format(
-                "You have received a new message from the HomeRide contact form.\n\n" +
-                        "Name: %s\n" +
-                        "Email: %s\n\n" +
-                        "Message:\n%s\n\n" +
-                        "---\n" +
-                        "This message was sent via the HomeRide contact form.",
-                contactRequest.getName(),
-                contactRequest.getEmail(),
-                contactRequest.getMessage()
-        );
+            // Set subject
+            message.setSubject("New Contact Form Submission from " + contactRequest.getName());
 
-        message.setText(emailBody);
+            // Set body
+            String emailBody = String.format(
+                    "You have received a new message from the HomeRide contact form.\n\n" +
+                            "Name: %s\n" +
+                            "Email: %s\n\n" +
+                            "Message:\n%s\n\n" +
+                            "---\n" +
+                            "This message was sent via the HomeRide contact form.",
+                    contactRequest.getName(),
+                    contactRequest.getEmail(),
+                    contactRequest.getMessage()
+            );
 
-        // Send the email
-        mailSender.send(message);
+            message.setText(emailBody);
+
+            // Send the email
+            mailSender.send(message);
+            logger.info("Contact email sent successfully to: {}", recipientEmail);
+
+        } catch (Exception e) {
+            logger.error("Failed to send contact email", e);
+            throw new RuntimeException("Failed to send email: " + e.getMessage(), e);
+        }
     }
 }

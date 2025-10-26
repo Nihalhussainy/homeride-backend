@@ -67,7 +67,7 @@ public class EmployeeService implements UserDetailsService {
         employee.setRole("EMPLOYEE"); // Set your default role
 
         // Initialize other fields if necessary (e.g., travelCredit)
-        employee.setTravelCredit(0.0); // Example initialization
+        employee.setTravelCredit(1000.0); // Example initialization
 
         return employeeRepository.save(employee);
     }
