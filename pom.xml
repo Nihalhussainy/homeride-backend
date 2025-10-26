@@ -18,9 +18,11 @@
     </properties>
     <dependencies>
 
+
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-mail</artifactId>
+            <groupId>com.sendgrid</groupId>
+            <artifactId>sendgrid-java</artifactId>
+            <version>4.10.1</version>
         </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>
