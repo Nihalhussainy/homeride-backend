@@ -47,7 +47,7 @@ public class MapsProxyController {
             return ResponseEntity.ok(Map.of("address", "Location not found"));
         } catch (Exception e) {
             System.err.println("Reverse geocoding error: " + e.getMessage());
-            e.printStackTrace();
+
             return ResponseEntity.status(500)
                     .body(Map.of("address", "Error retrieving address"));
         }

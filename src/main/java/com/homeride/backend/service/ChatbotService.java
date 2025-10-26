@@ -108,7 +108,7 @@ public class ChatbotService {
 
         } catch (Exception e) {
             System.err.println("Error calling Gemini API: " + e.getMessage());
-            e.printStackTrace();
+
             reply = "Sorry, I encountered an issue while processing your request. Please try asking differently.";
         }
 

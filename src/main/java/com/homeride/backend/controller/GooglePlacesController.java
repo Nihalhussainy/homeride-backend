@@ -40,7 +40,7 @@ public class GooglePlacesController {
             return ResponseEntity.ok(suggestions);
         } catch (Exception e) {
             System.err.println("Error in autocomplete controller: " + e.getMessage());
-            e.printStackTrace();
+
             // Return empty list instead of error to prevent frontend crashes
             return ResponseEntity.ok(Collections.emptyList());
         }
