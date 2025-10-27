@@ -85,6 +85,7 @@ public class SecurityConfig {
                         .requestMatchers("/app/**").authenticated() // WebSocket endpoints
                         .requestMatchers("/topic/**").authenticated() // WebSocket endpoints
                         .requestMatchers("/user/**").authenticated() // WebSocket endpoints
+                        .requestMatchers("/ws/**").permitAll()
 
                         // Admin endpoints
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
