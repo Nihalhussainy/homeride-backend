@@ -1,6 +1,6 @@
-package com.homeride.backend.filter; // Note the new package name
+package com.homeride.backend.filter;
 
-import com.homeride.backend.service.EmployeeService; // Use EmployeeService
+import com.homeride.backend.service.EmployeeService;
 import com.homeride.backend.util.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -20,13 +20,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Autowired
     private JwtUtil jwtUtil;
-    @Autowired
-    private EmployeeService employeeService; // Changed from MyUserDetailsService
 
+    @Autowired
+    private EmployeeService employeeService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
+
+        // Skip JWT validation for public endpoints
+        String requestPath = request.getRequestURI();
+        if (isPublicEndpoint(requestPath)) {
+            filterChain.doFilter(request, response);
+            return;
+        }
 
         final String authHeader = request.getHeader("Authorization");
         String username = null;
@@ -38,7 +45,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = this.employeeService.loadUserByUsername(username); // Changed here
+            UserDetails userDetails = this.employeeService.loadUserByUsername(username);
             if (jwtUtil.validateToken(jwt, userDetails)) {
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities());
@@ -47,5 +54,29 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
         }
         filterChain.doFilter(request, response);
+    }
+
+    private boolean isPublicEndpoint(String requestPath) {
+        // Health check endpoints
+        if (requestPath.startsWith("/health")) return true;
+        if (requestPath.startsWith("/actuator")) return true;
+
+        // WebSocket endpoints
+        if (requestPath.startsWith("/ws")) return true;
+        if (requestPath.startsWith("/app/")) return true;
+        if (requestPath.startsWith("/topic/")) return true;
+        if (requestPath.startsWith("/user/")) return true;
+
+        // Public API endpoints
+        if (requestPath.startsWith("/api/auth/")) return true;
+        if (requestPath.startsWith("/api/contact/")) return true;
+        if (requestPath.startsWith("/api/locations/cities")) return true;
+        if (requestPath.startsWith("/api/places/")) return true;
+        if (requestPath.startsWith("/api/proxy/")) return true;
+        if (requestPath.startsWith("/uploads/")) return true;
+        if (requestPath.startsWith("/api/test/public")) return true;
+        if (requestPath.equals("/api/rides/travel-info")) return true;
+
+        return false;
     }
 }
