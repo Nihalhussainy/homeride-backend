@@ -50,7 +50,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // Public endpoints
                         .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/auth/public/stats").permitAll() // <-- ADDED THIS LINE
+                        .requestMatchers("/api/auth/public/stats").permitAll()
                         .requestMatchers("/api/contact/**").permitAll()
                         .requestMatchers("/api/locations/cities").permitAll()
                         .requestMatchers("/api/places/autocomplete").permitAll()
@@ -58,6 +58,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/proxy/directions").permitAll()
                         .requestMatchers("/uploads/**").permitAll() // Allow access to uploaded files
                         .requestMatchers("/api/test/public").permitAll()
+                        // *** ADDED THIS LINE TO FIX 403 ERROR ***
+                        .requestMatchers(HttpMethod.GET, "/api/rides/travel-info").permitAll()
 
                         // Authenticated endpoints
                         .requestMatchers(HttpMethod.GET, "/api/rides").authenticated()
