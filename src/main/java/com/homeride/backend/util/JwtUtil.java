@@ -27,6 +27,18 @@ public class JwtUtil {
         return extractClaim(token, Claims::getSubject);
     }
 
+    /**
+     * Extract email from token (alias for extractUsername)
+     */
+    public String extractEmail(String token) {
+        try {
+            return extractClaim(token, Claims::getSubject);
+        } catch (Exception e) {
+            System.err.println("Error extracting email from token: " + e.getMessage());
+            return null;
+        }
+    }
+
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
@@ -64,6 +76,19 @@ public class JwtUtil {
     public Boolean validateToken(String token, UserDetails userDetails) {
         final String username = extractUsername(token);
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+    }
+
+    /**
+     * Validate token with email (for WebSocket authentication)
+     */
+    public Boolean isTokenValid(String token, String email) {
+        try {
+            final String tokenEmail = extractEmail(token);
+            return (tokenEmail != null && tokenEmail.equals(email) && !isTokenExpired(token));
+        } catch (Exception e) {
+            System.err.println("Error validating token: " + e.getMessage());
+            return false;
+        }
     }
 
     private Key getSigningKey() {
