@@ -48,6 +48,12 @@ public class SecurityConfig {
                 .cors(withDefaults())
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
+                        // WebSocket endpoints - MUST BE FIRST
+                        .requestMatchers("/ws/**").permitAll()
+                        .requestMatchers("/app/**").permitAll()
+                        .requestMatchers("/topic/**").permitAll()
+                        .requestMatchers("/user/**").permitAll()
+
                         // Public endpoints
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/auth/public/stats").permitAll()
@@ -57,9 +63,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/places/autocomplete").permitAll()
                         .requestMatchers("/api/places/details").permitAll()
                         .requestMatchers("/api/proxy/directions").permitAll()
-                        .requestMatchers("/uploads/**").permitAll() // Allow access to uploaded files
+                        .requestMatchers("/uploads/**").permitAll()
                         .requestMatchers("/api/test/public").permitAll()
-                        // *** ADDED THIS LINE TO FIX 403 ERROR ***
                         .requestMatchers(HttpMethod.GET, "/api/rides/travel-info").permitAll()
 
                         // Authenticated endpoints
@@ -82,10 +87,6 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/chatbot").authenticated()
                         .requestMatchers(HttpMethod.POST, "/api/rides/cancel").authenticated()
                         .requestMatchers("/api/chat/**").authenticated()
-                        .requestMatchers("/app/**").authenticated() // WebSocket endpoints
-                        .requestMatchers("/topic/**").authenticated() // WebSocket endpoints
-                        .requestMatchers("/user/**").authenticated() // WebSocket endpoints
-                        .requestMatchers("/ws/**").permitAll()
 
                         // Admin endpoints
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
