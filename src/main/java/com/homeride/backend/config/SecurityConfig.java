@@ -52,6 +52,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/auth/public/stats").permitAll()
                         .requestMatchers("/api/contact/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/employees/{id}").permitAll()
                         .requestMatchers("/api/locations/cities").permitAll()
                         .requestMatchers("/api/places/autocomplete").permitAll()
                         .requestMatchers("/api/places/details").permitAll()
