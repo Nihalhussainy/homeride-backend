@@ -53,6 +53,8 @@ public class SecurityConfig {
                         .requestMatchers("/app/**").permitAll()
                         .requestMatchers("/topic/**").permitAll()
                         .requestMatchers("/user/**").permitAll()
+                        .requestMatchers("/health").permitAll()
+
 
                         // Public endpoints
                         .requestMatchers("/api/auth/**").permitAll()
