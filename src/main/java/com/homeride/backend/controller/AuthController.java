@@ -39,11 +39,14 @@ public class AuthController {
         try {
             Employee registeredEmployee = employeeService.register(registerRequest);
             return ResponseEntity.ok("Employee registered successfully");
+        } catch (IllegalArgumentException e) { // Catch the specific exception
+            // Return the message from the service, (e.g., "Password must be...")
+            return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error: Email is already in use!");
+            // A fallback for other unexpected errors
+            return ResponseEntity.status(500).body("An unexpected error occurred.");
         }
     }
-
     @PostMapping("/login")
     public ResponseEntity<?> loginEmployee(@RequestBody LoginRequestDTO loginRequest) {
         try {

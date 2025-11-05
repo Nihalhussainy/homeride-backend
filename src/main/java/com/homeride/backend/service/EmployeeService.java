@@ -47,16 +47,18 @@ public class EmployeeService implements UserDetailsService {
         // --- 1. Convert email to lowercase ---
         String lowercaseEmail = request.getEmail().toLowerCase();
 
-        // --- 2. Check if the lowercase email already exists ---
-        if (employeeRepository.existsByEmail(lowercaseEmail)) {
-            throw new IllegalArgumentException("Email address is already registered.");
-        }
-
         // --- 3. Validate password complexity (Example - adapt as needed) ---
+        // MOVED UP: Check password length first.
         if (request.getPassword() == null || request.getPassword().length() < 8) {
             throw new IllegalArgumentException("Password must be at least 8 characters long.");
         }
         // Add more password rules if desired (e.g., regex for uppercase, numbers, symbols)
+
+        // --- 2. Check if the lowercase email already exists ---
+        // MOVED DOWN: Check email uniqueness after password is valid.
+        if (employeeRepository.existsByEmail(lowercaseEmail)) {
+            throw new IllegalArgumentException("Email address is already registered.");
+        }
 
         // --- 4. Proceed with creating the new Employee ---
         Employee employee = new Employee();
